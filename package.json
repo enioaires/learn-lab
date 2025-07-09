@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
+		"@prisma/client": "^6.11.1",
 		"@radix-ui/react-alert-dialog": "^1.1.14",
 		"@radix-ui/react-avatar": "^1.1.10",
 		"@radix-ui/react-checkbox": "^1.3.2",
@@ -26,6 +27,7 @@
 		"@radix-ui/react-toggle-group": "^1.1.10",
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"@radix-ui/react-use-controllable-state": "^1.2.2",
+		"better-auth": "^1.2.12",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"input-otp": "^1.4.2",
@@ -48,6 +50,7 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"prisma": "^6.11.1",
 		"tailwindcss": "^4",
 		"tw-animate-css": "^1.3.5",
 		"typescript": "^5"

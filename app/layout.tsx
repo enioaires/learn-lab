@@ -35,7 +35,7 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<ThemeSwitcher className="absolute top-2 right-2" />
+					<ThemeSwitcher className="absolute top-2 right-2 z-50" />
 					{children}
 				</ThemeProvider>
 			</body>
