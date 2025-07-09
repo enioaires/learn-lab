@@ -6,10 +6,24 @@ import { otpEmailTemplate } from "./email-templates";
 import { env } from "./env";
 import { resend } from "./resend";
 
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 5,
+    customRules: {
+      "/api/auth/send-verification-otp": {
+        window: 300,
+        max: 3
+      }
+    },
+    storage: "database",
+    modelName: "rateLimit"
+  },
   socialProviders: {
     github: {
       clientId: env.GITHUB_CLIENT_ID,
@@ -26,6 +40,9 @@ export const auth = betterAuth({
           html: otpEmailTemplate(otp),
         });
       },
+      expiresIn: 300,
+      allowedAttempts: 3,
+      otpLength: 6,
     }),
   ],
 });

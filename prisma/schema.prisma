@@ -67,3 +67,14 @@ model Verification {
 
   @@map("verification")
 }
+
+model RateLimit {
+  id        String   @id
+  key       String
+  count     Int
+  window    DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([key])
+  @@map("rate_limit")
+}

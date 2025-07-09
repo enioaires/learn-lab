@@ -5,6 +5,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { CheckCircleIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -13,8 +14,11 @@ type VerifyRequestFormProps = {
 };
 
 function VerifyRequestForm({ email }: VerifyRequestFormProps) {
+  const router = useRouter();
   const [otp, setOtp] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  const isOtpValid = otp.length === 6;
 
   const verifyRequest = () => {
     startTransition(async () => {
@@ -24,6 +28,7 @@ function VerifyRequestForm({ email }: VerifyRequestFormProps) {
         fetchOptions: {
           onSuccess: () => {
             toast.success("Conta verificada com sucesso!");
+            router.push("/");
           },
           onError: () => {
             toast.error("Erro ao verificar, tente novamente mais tarde.");
@@ -72,7 +77,9 @@ function VerifyRequestForm({ email }: VerifyRequestFormProps) {
 
         <Button
           onClick={verifyRequest}
-          className="w-full">
+          className="w-full"
+          disabled={isPending || !isOtpValid}
+        >
           {verifyButtonContent}
         </Button>
       </CardContent>

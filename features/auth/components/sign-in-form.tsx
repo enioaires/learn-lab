@@ -1,6 +1,6 @@
 "use client"
 import { GithubIcon, SendIcon } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,19 @@ function SignInForm() {
   const [isGithubPending, startGithubTransition] = useTransition();
   const [isEmailPending, startEmailTransition] = useTransition();
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const signInWithGithub = () => {
+    if (honeypot) return;
+
     startGithubTransition(async () => {
       await authClient.signIn.social({
         provider: "github",
@@ -40,6 +51,13 @@ function SignInForm() {
   };
 
   const sendEmailOTP = () => {
+    if (honeypot) {
+      toast.error("Erro de validação.");
+      return;
+    }
+
+    if (cooldown > 0) return;
+
     startEmailTransition(async () => {
       await authClient.emailOtp.sendVerificationOtp({
         email,
@@ -47,10 +65,18 @@ function SignInForm() {
         fetchOptions: {
           onSuccess: () => {
             toast.success("Verificação enviada com sucesso!");
-            router.push(`/verify-request/${email}`);
+            setCooldown(60);
+            const params = new URLSearchParams({ email });
+            router.push(`/verify-request?${params.toString()}`);
           },
-          onError: () => {
-            toast.error("Erro ao enviar OTP, tente novamente mais tarde.");
+          onError: (context) => {
+            const error = context.error;
+            if (error.status === 429) {
+              toast.error("Muitas tentativas. Tente novamente em alguns minutos.");
+              setCooldown(300);
+            } else {
+              toast.error("Erro ao enviar OTP, tente novamente mais tarde.");
+            }
           },
         }
       })
@@ -68,6 +94,8 @@ function SignInForm() {
 
   const emailButtonContent = isEmailPending ? (
     <Spinner variant="ring" />
+  ) : cooldown > 0 ? (
+    `Aguarde ${cooldown}s`
   ) : (
     <>
       <SendIcon className="size-4" />
@@ -85,6 +113,25 @@ function SignInForm() {
       </CardHeader>
 
       <CardContent className="grid gap-4">
+        <input
+          type="text"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            opacity: 0,
+            pointerEvents: 'none',
+            height: 0,
+            width: 0,
+            border: 'none',
+            outline: 'none'
+          }}
+          tabIndex={-1}
+          autoComplete="nope"
+          aria-hidden="true"
+        />
+
         <Button
           onClick={signInWithGithub}
           className="w-full"
@@ -108,10 +155,16 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="email@exemplo.com"
               type="email"
-              id="email" />
+              id="email"
+            />
           </div>
 
-          <Button onClick={sendEmailOTP}>{emailButtonContent}</Button>
+          <Button
+            onClick={sendEmailOTP}
+            disabled={isEmailPending || cooldown > 0 || !email}
+          >
+            {emailButtonContent}
+          </Button>
         </div>
       </CardContent>
     </Card>
