@@ -1,12 +1,8 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
-import { Pill } from "@/components/ui/pill";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { BookIcon, BoxesIcon, ChartColumnIcon, Gamepad2Icon, type LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type Feature = {
   title: string;
@@ -38,29 +34,13 @@ const features: Feature[] = [
 ]
 
 const Home = () => {
-  const router = useRouter();
-  const { data: session } = authClient.useSession();
-
-  const signOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Deslogado com sucesso!");
-          router.push("/sign-in");
-        },
-        onError: () => {
-          toast.error("Erro ao deslogar, tente novamente mais tarde.");
-        },
-      },
-    });
-  };
   return (
     <div>
       <section className="relative py-20">
         <div className="flex flex-col items-center text-center space-y-8">
-          <Pill variant="outline">
+          <Badge variant="outline">
             O Futuro da Educação Online
-          </Pill>
+          </Badge>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
             Melhore a sua experiência de aprendizagem
           </h1>
@@ -91,7 +71,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
         {features.map((feature, index) => (
           <Card
             key={index}

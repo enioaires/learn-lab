@@ -8,11 +8,6 @@ import { cn } from "@/lib/utils";
 
 const themes = [
 	{
-		key: "system",
-		icon: Monitor,
-		label: "System theme",
-	},
-	{
 		key: "light",
 		icon: Sun,
 		label: "Light theme",
@@ -50,7 +45,7 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
 	return (
 		<div
 			className={cn(
-				"relative isolate flex h-8 rounded-full bg-background p-1 ring-1 ring-border w-fit",
+				"relative isolate flex h-8 bg-background p-1 ring-1 ring-border w-fit",
 				className,
 			)}
 		>
@@ -60,14 +55,14 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
 				return (
 					<button
 						aria-label={label}
-						className="relative h-6 w-6 rounded-full"
+						className="relative h-6 w-6"
 						key={key}
 						onClick={() => handleThemeClick(key as "light" | "dark" | "system")}
 						type="button"
 					>
 						{isActive && key !== "system" && (
 							<motion.div
-								className="absolute inset-0 rounded-full bg-secondary"
+								className="absolute inset-0 bg-secondary"
 								layoutId="activeTheme"
 								transition={{ type: "spring", duration: 0.5 }}
 							/>
